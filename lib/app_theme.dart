@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants/constants.dart';
 
@@ -8,6 +11,9 @@ class ThemeProvider with ChangeNotifier {
   //bool for current theme
   bool isLightTheme;
   ThemeProvider({required this.isLightTheme});
+
+  //Add the check and registerWtih in your desired method.
+
   //used for matching the top status navigation bar with the theme
   getCurrentStatusNavigationBarColor() {
     if (isLightTheme) {
@@ -30,7 +36,20 @@ class ThemeProvider with ChangeNotifier {
   }
   //Used for toggling between light theme and dark theme
 
-  toggleThemeData() {}
+  toggleThemeData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (isLightTheme) {
+      sharedPreferences.setBool(SPref.isLight, false);
+      isLightTheme = !isLightTheme;
+      notifyListeners();
+    } else {
+      sharedPreferences.setBool(SPref.isLight, true);
+      isLightTheme = !isLightTheme;
+      notifyListeners();
+    }
+    getCurrentStatusNavigationBarColor();
+    notifyListeners();
+  }
 
   ThemeData themeData() {
     return ThemeData(
@@ -38,14 +57,16 @@ class ThemeProvider with ChangeNotifier {
       scaffoldBackgroundColor:
           isLightTheme ? AppColors.yellow : AppColors.black,
       textTheme: TextTheme(
-          displayLarge: GoogleFonts.stickNoBills(
-            fontSize: 70,
-            fontWeight: FontWeight.w600,
-            color: isLightTheme ? AppColors.black : AppColors.orange,
-          ),
-          displayMedium: GoogleFonts.robotoCondensed(
-              fontWeight: FontWeight.w500,
-              color: isLightTheme ? AppColors.black : AppColors.orange)),
+        displayLarge: GoogleFonts.stickNoBills(
+          fontSize: 70,
+          fontWeight: FontWeight.w600,
+          color: isLightTheme ? AppColors.black : AppColors.orange,
+        ),
+        displayMedium: GoogleFonts.robotoCondensed(
+          fontWeight: FontWeight.w500,
+          color: isLightTheme ? AppColors.black : AppColors.orange,
+        ),
+      ),
     );
   }
 
