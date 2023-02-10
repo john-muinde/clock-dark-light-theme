@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
+import 'component/time.dart';
 import 'component/wire_draw.dart';
 
 import '../constants/constants.dart';
@@ -32,6 +35,29 @@ class _HomeScreenState extends State<HomeScreen> {
         themeProvider.isLightTheme ? containerPosition : finalPosition;
 
     super.didChangeDependencies();
+  }
+
+  String hours = '';
+  String minutes = '';
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        hours = DateFormat('HH').format(DateTime.now());
+        minutes = DateFormat('mm').format(DateTime.now());
+      });
+    });
+  }
+
+  void stopTimer() {
+    _timer?.cancel();
   }
 
   @override
@@ -117,6 +143,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    stopTimer();
+    super.dispose();
+  }
+
   SafeArea leftPart(
       BuildContext context, Size size, ThemeProvider themeProvider) {
     return SafeArea(
@@ -126,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              DateTime.now().hour.toString(),
+              hours,
               style: Theme.of(context).textTheme.displayLarge,
             ),
             SizedBox(
@@ -138,11 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              DateTime.now().minute.toString(),
-              style: Theme.of(context)
-                  .textTheme
-                  .displayLarge!
-                  .copyWith(color: AppColors.white),
+              minutes,
+              style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                    color: AppColors.white,
+                  ),
             ),
             const Spacer(),
             const Text(
