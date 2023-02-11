@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:dark_light_theme/screen/component/location.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../app_theme.dart';
-import 'component/time.dart';
 import 'component/wire_draw.dart';
 
 import '../constants/constants.dart';
@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String hours = '';
   String minutes = '';
   Timer? _timer;
+  dynamic _locationData;
 
   @override
   void initState() {
@@ -47,8 +48,16 @@ class _HomeScreenState extends State<HomeScreen> {
     startTimer();
   }
 
+  WeatherApiClient apiClient = WeatherApiClient();
+
   void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    apiClient.getWeather().then((value) {
+      setState(() {
+        _locationData = value;
+      });
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         hours = DateFormat('HH').format(DateTime.now());
         minutes = DateFormat('mm').format(DateTime.now());
@@ -206,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              "30\u00B0C",
+              _locationData != null
+                  ? '${_locationData["current_weather"]["temperature"]}\u00B0C'
+                  : '...',
               style: Theme.of(context).textTheme.displayMedium!.copyWith(
                     color: AppColors.white,
                   ),

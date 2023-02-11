@@ -25,7 +25,7 @@ class AppStart extends StatelessWidget {
           create: (_) => ThemeProvider(isLightTheme: isLightTheme),
         )
       ],
-      child: MyApp(),
+      child: const MyApp(),
     );
   }
 }

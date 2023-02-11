@@ -9,13 +9,11 @@ class TimeEverySecond {
 
   void startTimer(Function callback) {
     this.callback = callback;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (callback != null) {
-        callback([
-          DateFormat('H').format(DateTime.now()).toString(),
-          DateFormat('m').format(DateTime.now()).toString(),
-        ]);
-      }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      callback([
+        DateFormat('H').format(DateTime.now()).toString(),
+        DateFormat('m').format(DateTime.now()).toString(),
+      ]);
     });
   }
 
